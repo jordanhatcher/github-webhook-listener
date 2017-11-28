@@ -14,7 +14,7 @@ with open('config.json') as data:
 
 @app.route(config['route'], methods=['POST'])
 def webhook():
-    payload_signature = request.headers.get('X-Hub-Signature')
+    payload_signature = request.headers.get('X-Hub-Signature').replace('sha1=', '')
     calculated_signature = hmac.new(config['secret'].encode(), request.get_data(), sha1).hexdigest()
 
     if hmac.compare_digest(payload_signature.encode(), calculated_signature.encode()):

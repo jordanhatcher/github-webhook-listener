@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --no-cache python3 bash
+RUN apk add --no-cache python3 bash git
 
 COPY ./src /src
 WORKDIR /src
