@@ -9,8 +9,11 @@ import sys
 
 app = Flask('listener')
 
-with open('config.json') as data:
-    config = json.load(data)
+try:
+    with open('config.json') as data:
+        config = json.load(data)
+except:
+    sys.exit('Unable to find config.json. Exiting.')
 
 @app.route(config['route'], methods=['POST'])
 def webhook():
@@ -18,7 +21,7 @@ def webhook():
     calculated_signature = hmac.new(config['secret'].encode(), request.get_data(), sha1).hexdigest()
 
     if hmac.compare_digest(payload_signature.encode(), calculated_signature.encode()):
-        os.system(config['hook']) 
+        os.system('\n'.join(config['hook']))
 
     return ('OK', 200)
 
