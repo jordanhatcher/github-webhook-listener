@@ -17,13 +17,20 @@ except:
 
 @app.route(config['route'], methods=['POST'])
 def webhook():
-    payload_signature = request.headers.get('X-Hub-Signature').replace('sha1=', '')
-    calculated_signature = hmac.new(config['secret'].encode(), request.get_data(), sha1).hexdigest()
+    try:
+        body = request.get_json()
+    except:
+        return ('', 400)
 
-    if hmac.compare_digest(payload_signature.encode(), calculated_signature.encode()):
-        os.system('\n'.join(config['hook']))
+    if body['ref'] == 'refs/heads/master':
+        payload_signature = request.headers.get('X-Hub-Signature').replace('sha1=', '')
+        calculated_signature = hmac.new(config['secret'].encode(), request.get_data(), sha1).hexdigest()
 
-    return ('OK', 200)
+        if hmac.compare_digest(payload_signature.encode(), calculated_signature.encode()):
+            os.system('\n'.join(config['hook']))
+            return ('OK', 200)
+
+    return ('', 400)
 
 if __name__ == "__main__":
     app.run(host=config['host'], port=config['port'])
